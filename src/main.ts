@@ -4,16 +4,11 @@ import Fastify from 'fastify';
 import FastifyCors from '@fastify/cors';
 import FastifyRateLimit from '@fastify/rate-limit';
 
-import books from './routes/books';
+// ONLY import what your architecture actually uses
 import anime from './routes/anime';
-import manga from './routes/manga';
-import comics from './routes/comics';
-import lightnovels from './routes/light-novels';
-import movies from './routes/movies';
 import meta from './routes/meta';
 
 (async () => {
-  // FIX 1: Provide a fallback port (3000) so it never evaluates to NaN and crashes
   const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
   
   const fastify = Fastify({
@@ -37,17 +32,13 @@ import meta from './routes/meta';
     },
   });
 
-  await fastify.register(books, { prefix: '/books' });
+  // ONLY register Anime and Meta routes
   await fastify.register(anime, { prefix: '/anime' });
-  await fastify.register(manga, { prefix: '/manga' });
-  await fastify.register(comics, { prefix: '/comics' });
-  await fastify.register(lightnovels, { prefix: '/light-novels' });
-  await fastify.register(movies, { prefix: '/movies' });
   await fastify.register(meta, { prefix: '/meta' });
 
   try {
     fastify.get('/', (_, rp) => {
-      rp.status(200).send('Welcome to consumet api! 🎉');
+      rp.status(200).send('Welcome to the Anime API! 🎉');
     });
     fastify.get('*', (request, reply) => {
       reply.status(404).send({
@@ -61,7 +52,6 @@ import meta from './routes/meta';
       console.log(`server listening on ${address}`);
     });
   } catch (err: any) {
-    // FIX 2: Use console.error so Render prints the exact error IMMEDIATELY before crashing
     console.error("CRITICAL STARTUP ERROR:", err);
     process.exit(1);
   }
