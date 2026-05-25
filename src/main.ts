@@ -13,10 +13,13 @@ import movies from './routes/movies';
 import meta from './routes/meta';
 
 (async () => {
-  const PORT = Number(process.env.PORT);
+  // FIX 1: Provide a fallback port (3000) so it never evaluates to NaN and crashes
+  const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+  
   const fastify = Fastify({
     logger: true,
   });
+  
   await fastify.register(FastifyCors, {
     origin: '*',
     methods: 'GET',
@@ -58,7 +61,8 @@ import meta from './routes/meta';
       console.log(`server listening on ${address}`);
     });
   } catch (err: any) {
-    fastify.log.error(err);
+    // FIX 2: Use console.error so Render prints the exact error IMMEDIATELY before crashing
+    console.error("CRITICAL STARTUP ERROR:", err);
     process.exit(1);
   }
 })();
